@@ -32,8 +32,8 @@ COPY generate_audio.py ./
 RUN echo 'echo "Username: $(whoami)"' >> /root/.bashrc
 RUN echo 'echo "Container IP: $(hostname -I)"' >> /root/.bashrc
 
-# Expose SSH port
-EXPOSE 22
+# Expose Flask port
+EXPOSE 5000
 
-# Start SSH server by default
-CMD ["/usr/sbin/sshd", "-D"]
+# Start Flask app by default
+CMD ["python", "app.py"]

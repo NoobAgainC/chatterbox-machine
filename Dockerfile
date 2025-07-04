@@ -35,5 +35,9 @@ RUN echo 'echo "Container IP: $(hostname -I)"' >> /root/.bashrc
 # Expose Flask port
 EXPOSE 5000
 
+# Create a non-root user and switch to it
+RUN useradd -u 10014 -m appuser
+USER 10014
+
 # Start Flask app by default
 CMD ["python", "app.py"]

@@ -19,7 +19,14 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 # Copy script
 COPY generate_audio.py ./
+COPY app.py ./
+
+# Expose port for Flask
+EXPOSE 8080
 
 # Create a non-root user and switch to it
 RUN useradd -u 10014 -m -s /bin/bash appuser
 USER 10014
+
+# Run the Flask app
+CMD ["python", "app.py"]

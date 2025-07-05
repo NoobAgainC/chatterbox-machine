@@ -1,32 +1,38 @@
-# Use official Python image as base
-FROM python:3.10-slim
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Fix any broken dpkg state
+RUN dpkg --configure -a
 
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        openssh-server \
+        python3 python3-pip python3-venv \
+        gcc \
         sox \
         ffmpeg \
         git \
+        openssh-server \
     && rm -rf /var/lib/apt/lists/*
 
-# Set workdir
-WORKDIR /app
-
-# Copy requirements and install Python dependencies
-COPY requirements.txt ./
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
-
-# Copy script
-COPY generate_audio.py ./
-COPY app.py ./
-
-# Expose port for Flask
-EXPOSE 8080
-
-# Create a non-root user and switch to it
+# Create a non-root user
 RUN useradd -u 10014 -m -s /bin/bash appuser
+
+# Set up workdir and copy files
+WORKDIR /app
+COPY . /app
+
+# Install Python dependencies
+RUN pip3 install --upgrade pip && pip3 install --no-cache-dir -r requirements.txt
+
+# Set permissions
+RUN chown -R 10014:0 /app
+
 USER 10014
 
-# Run the Flask app
-CMD ["python", "app.py"]
+# (Optional) Expose port if you need it, e.g. for Flask
+EXPOSE 8080
+
+# Default command (change as needed)
+CMD ["python3", "app.py"]
